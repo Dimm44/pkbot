@@ -1,5 +1,6 @@
 module Pkbot::BackOffice
   class Article
+    
     attr_accessor :issue, :row
 
     def initialize(issue, row)
