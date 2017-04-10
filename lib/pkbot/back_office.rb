@@ -18,6 +18,7 @@ module Pkbot::BackOffice
   LOGIN_URL = 'https://id2.action-media.ru/Account/ShortLogin'
   LOGIN     = Pkbot::CONFIG['back_office']['login']
   PASSWORD  = Pkbot::CONFIG['back_office']['password']
+  
 end
 
 require_relative 'back_office/entity'
