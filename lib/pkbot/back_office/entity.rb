@@ -1,5 +1,6 @@
 module Pkbot::BackOffice
   class Entity
+    
     attr_reader :node
     attr_reader :attributes
 
