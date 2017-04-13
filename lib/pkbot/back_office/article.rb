@@ -359,7 +359,7 @@ module Pkbot::BackOffice
 
     def process
       no_ex('QUOTES')     {replace_quotes}
-      no_ex('TYPOGRAF')   {typograf!}
+      # no_ex('TYPOGRAF')   {typograf!}
       no_ex('INDICATORS') {process_indicators}
 
       no_ex('PAGE')       {self.page     = xml_article.page}

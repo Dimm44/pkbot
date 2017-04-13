@@ -99,6 +99,7 @@ module Pkbot
 
     def process_xml
       return unless file_exists?(:xml)
+      
       text = xml_utf8.read
       SUBS.each {|old, _new| text.gsub! old, _new }
 
