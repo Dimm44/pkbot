@@ -3,13 +3,9 @@ module Pkbot::BackOffice
     def login
       id2 = "https://id2.action-media.ru"
       puts "Logging in..."
-      # link = "http://bo.profkiosk.ru/api/auth/login"
-      # first_attempt = get link, 'first_attempt'
-      # auth_page     = get first_attempt['location'], "auth_page"
 
-      link = "#{id2}/logon/index?appid=74&reglink=&p=1&r=0.4971437090779589"
-      # link = "http://bo.profkiosk.ru/api/auth/login"
-      auth_page     = get link, "auth_page"
+      link      = "#{id2}/logon/index?appid=74&reglink=&p=1&r=0.4971437090779589"
+      auth_page = get link, "auth_page"
 
       html = parse_html auth_page
 
@@ -19,21 +15,9 @@ module Pkbot::BackOffice
       login_fields['ConfirmationCode'] = ''
 
       auth_path = form_action html
-      # auth_uri  = URI(first_attempt['location'])
-
-      # url = "#{auth_uri.scheme}://#{auth_uri.host}#{auth_path}"
       check_login_path = "#{id2}/Logon/CheckLogin"
       check_login_page = post(check_login_path, {
-          params: {user: LOGIN, passwrod: PASSWORD, referrer: ''},
-          request_headers: {
-            'DNT' => '1',
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Content-Type' => 'application/json; charset=utf-8',
-            'X-NewRelic-App-Data' => 'PxQPU1RSDQYTVVBaBQgBUVUTGhE1AwE2QgNWEVlbQFtcCxYsZyIcLgtRWA8lDFZHQgsNDlJDGCUMVFVYLgkEC15AFFIWCBgCHVUKVARSAVdIBhtDIiIPdgVRWFtycAFeIQAOd0BKBQNcEV0/',
-            'X-xss-protection' => '1; mode=block',
-            'Strict-Transport-Security' => 'max-age=7776000',
-            'X-Content-Type-Options' => 'nosniff',
-          }
+          params: {user: LOGIN, passwrod: PASSWORD, referrer: ''}
         }, 'check_login')
 
       url = "https://id2.action-media.ru#{auth_path}"
@@ -42,11 +26,14 @@ module Pkbot::BackOffice
       action_login = post(url, {
         params: login_fields,
         request_headers: {
-          'Upgrade-Insecure-Requests' => '1',
           'Referer' => link
         }
       }, 'auth_post')
-      # pk_login     = get action_login['location'], 'pk_auth'
+
+      post_logon   = get action_login['location'], 'post_logon'
+      logon_token  = action_login['location'][/Token=([\w\-]+)/, 1]
+      bo_login_url ="http://bo.profkiosk.ru/api/auth/login?returnUrl=%2fdept%2f8%2fpress%2f187%2fyear%2f2017%2fissue%2f&token=#{logon_token}"
+      get bo_login_url, 'bo_login'
     end
 
     def logout

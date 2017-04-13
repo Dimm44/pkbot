@@ -10,7 +10,7 @@ module Pkbot::BackOffice
       "Accept-Language"=>"en-US,en;q=0.5", 
       "Accept-Encoding"=>"gzip, deflate",
       "Connection"=>"keep-alive",
-      "X-NewRelic-ID" => "XAQFUFNWGwIBXFNbAQYG"
+      # "X-NewRelic-ID" => "XAQFUFNWGwIBXFNbAQYG"
     } 
 
     def http(uri)
