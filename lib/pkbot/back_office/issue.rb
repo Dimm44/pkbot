@@ -8,8 +8,9 @@ module Pkbot::BackOffice
       @cols = row['cols']
     end
 
+    ISSUE_LINK = /\/!\/content\/issue\/\d+\?tab=article/
     def number
-      text = cols.find {|e| e['type'] == 'link' && e['href'] =~ /issue\/\d+\/article/}['text']
+      text = cols.find {|e| e['type'] == 'link' && e['href'] =~ ISSUE_LINK}['text']
       text[/№ ([\d]+(?:\/П)?)/, 1]
     end
 
@@ -21,10 +22,18 @@ module Pkbot::BackOffice
       row['id']
     end
 
+    DEFAULT_PARAMS = {
+      "ParserId"            => "-1",
+      "AutoAuthors"         => "true",
+      "AutoRubrics"         => "true",
+      "UseLastRubric"       => "true",
+      "UsePageFromFileName" => "false"
+    }
+
     def _import_file(filename)
       request = HtmlPage::ArticlesImport.new(id: id)
       request.files['upload'] = filename
-      request.post
+      request.post(DEFAULT_PARAMS)
     end
 
     def import_articles(filename = kms_issue.file(:pxml))
@@ -45,7 +54,7 @@ module Pkbot::BackOffice
     end
 
     def articles
-      @articles ||= page.json['rows'].map {|row| Pkbot::BackOffice::Article.new(self, row)}
+      @articles ||= page.json['data']['rows'].map {|row| Pkbot::BackOffice::Article.new(self, row)}
     end
 
     def reset_articles
@@ -98,6 +107,10 @@ module Pkbot::BackOffice
       articles.each {|article| no_ex {article.mark_for_deletion if article.trash?}}
     end
 
+    def published?
+      
+    end
+
     def publish
       articles.each {|article| article.publish}
     end
@@ -108,7 +121,8 @@ module Pkbot::BackOffice
 
     class << self
       def issues_page
-        @issues_page ||= HtmlPage::Issues.new
+        # @issues_page ||= HtmlPage::Issues.new
+        HtmlPage::Issues.new
       end
 
       def lookup(number)

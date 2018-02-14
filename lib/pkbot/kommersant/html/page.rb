@@ -45,10 +45,6 @@ module Pkbot::Kommersant::Html
       @articles ||= @node.css("article.b-hiphop__item").map {|node| Entry.new(node, issue, nil, self)}
     end
 
-    # def articles
-    #   @articles ||= @node.css("article.b-hiphop__item").map {|node| Article.new(node, issue, self)}
-    # end
-
     def first?
       page_no == 1
     end

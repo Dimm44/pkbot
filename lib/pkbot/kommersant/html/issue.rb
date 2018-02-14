@@ -3,7 +3,7 @@ require 'open-uri'
 module Pkbot::Kommersant::Html
   class Issue < Pkbot::BackOffice::HtmlPage
     attr_accessor :contents, :date, :issue
-    self.path  = "http://kommersant.ru/daily/:date_db"
+    self.path  = "https://www.kommersant.ru/daily/:date_db"
     self.cache = true
 
     def initialize(issue)
@@ -19,10 +19,6 @@ module Pkbot::Kommersant::Html
 
     def pages
       @pages ||= @contents.css(".b-hiphop").map {|node| Page.new(node, self)}
-    end
-
-    def articles
-      pages.flat_map &:articles
     end
 
     def date_db

@@ -142,7 +142,7 @@ class Snippet
     instance_eval %Q{
       def #{name}(v = nil)
         if !v
-          @#{name} || #{default_value}
+          @#{name} || #{default_value.inspect}
         else
           @#{name} = v
         end
@@ -151,4 +151,5 @@ class Snippet
   end
 
   load_all
+  self['main'] # auto-load main
 end

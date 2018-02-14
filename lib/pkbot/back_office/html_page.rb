@@ -56,7 +56,10 @@ module Pkbot::BackOffice
       ([self.class.name.split('::')[-2, 2].join("_").underscore] + [label] +  @attrs.to_a).compact.join("_")
     end
 
-    def post(label = nil, params = {})
+    def post(*args)
+      params = args.extract_options!
+      label  = args.first
+      
       request_params  = make_params.merge(params)
       options         = {params: request_params}
 

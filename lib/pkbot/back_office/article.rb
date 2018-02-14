@@ -27,11 +27,11 @@ module Pkbot::BackOffice
     end
 
     def page=(value)
-      html_page.post(:page, page: value)
+      html_page.post_json(:page, value: value)
     end
 
     def category=(value)
-      html_page.request_page(:category, category_id: value)
+      html_page.post_json(:category, value: value)
     end
 
     def publish
@@ -49,9 +49,14 @@ module Pkbot::BackOffice
       enc  = encode_for_typograf(prep)
       save_as("typograf_#{ts}_prep", prep)
       save_as("typograf_#{ts}_encoded", enc)
-      json_response = html_page.post(:typograf, '' => enc)#.gsub(/(\<br\>)*/, "&nbsp;\n"))
-  
-      processed = JSON('[' + json_response + ']')[0]
+
+      # json_response = html_page.post(:typograf, '' => enc)#.gsub(/(\<br\>)*/, "&nbsp;\n"))
+
+      # artlebedev, post json:
+      json_response = html_page.post_json(:typograf, {'value' => enc})
+      
+      # processed = JSON('[' + json_response + ']')[0]
+      processed = JSON('[' + json_response.body.force_encoding("UTF-8") + ']')[0]
 
       @body  = postprocess(processed)
       save_as("typograf_#{ts}_after")
@@ -124,9 +129,10 @@ module Pkbot::BackOffice
       prep      = preprocess body
       encoded64 = Base64.encode64(prep).gsub("\n", "")
 
-      json = {'title' => content_title, 'body' => encoded64}
-      html_page.post_json(:save, json)
+      json = { 'title' => content_title, 'body' => encoded64 } # , 'picsReadingTimes' => 1, 'styled' => 0 }
+      saved = html_page.post_json(:save, json)
       reset_content
+      saved
     end
 
     ARTICLES_DIR = Pkbot::Folder.tmp['articles']
@@ -232,7 +238,15 @@ module Pkbot::BackOffice
 
     def insert_image(image = xml_article.html.biggest_image)
       img = img_tag_for image.file
-      intro.add_next_sibling img
+
+      if (existing_img = intro.next_sibling.css('img').first)
+        div = existing_img.parent
+        existing_img.remove
+        div.add_child img
+      else
+        intro.add_next_sibling img
+      end
+
       save_html
     end
 
@@ -358,15 +372,23 @@ module Pkbot::BackOffice
     end
 
     def process
-      no_ex('QUOTES')     {replace_quotes}
-      # no_ex('TYPOGRAF')   {typograf!}
-      no_ex('INDICATORS') {process_indicators}
+      no_ex('QUOTES')     { replace_quotes     }
+      no_ex('TYPOGRAF')   { typograf!          }
+      no_ex('INDICATORS') { process_indicators }
 
-      no_ex('PAGE')       {self.page     = xml_article.page}
-      no_ex('CATEGORY')   {self.category = xml_article.category_id}
+      no_ex('PAGE')       { set_page     }
+      no_ex('CATEGORY')   { set_category }
 
-      no_ex('IMAGE')      {insert_image if config.photo}
-      no_ex('INFOG')      {insert_infog if config.infog}
+      no_ex('IMAGE')      { insert_image if config.photo }
+      no_ex('INFOG')      { insert_infog if config.infog }
+    end
+
+    def set_category
+      self.category = xml_article.category_id
+    end
+
+    def set_page
+      self.page     = xml_article.page
     end
 
     def no_ex(stage, &block)

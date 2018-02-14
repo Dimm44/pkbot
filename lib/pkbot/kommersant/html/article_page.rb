@@ -1,7 +1,7 @@
 module Pkbot::Kommersant::Html
   class ArticlePage < Pkbot::BackOffice::HtmlPage
     attr_accessor :contents, :date, :issue
-    self.path  = "http://kommersant.ru/doc/:id"
+    self.path  = "https://www.kommersant.ru/doc/:id"
     self.cache = true
 
     def pages

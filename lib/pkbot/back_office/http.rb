@@ -16,6 +16,7 @@ module Pkbot::BackOffice
     def http(uri)
       http         = Net::HTTP.new(uri.host, uri.port)
       if uri.scheme == 'https'
+        puts "Using SSL..."
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
@@ -53,7 +54,7 @@ module Pkbot::BackOffice
     end
 
     def check_500(response)
-      raise BackOfficeError if response.code.to_i == 500
+      raise BackOfficeError if response.code.to_i == 500 && !$DISABLE_NO_EX
       response
     end
 
@@ -131,7 +132,8 @@ module Pkbot::BackOffice
       if params.values.any? {|value| value.is_a?(File)}
         name, file = params.find {|name, value| value.is_a?(File)}
         params.delete name
-        request = Net::HTTP::Post::Multipart.new(uri.path, name => UploadIO.new(file, 'text/xml', File.basename(file)))
+        new_params = {name => UploadIO.new(file, 'text/xml', File.basename(file))}.merge(params)
+        request = Net::HTTP::Post::Multipart.new(uri.path, new_params)        
       else
         request = Net::HTTP::Post.new(uri.path)
         request.set_form_data params

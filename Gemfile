@@ -7,6 +7,6 @@ gem 'rest-client'
 gem 'multipart-post'
 gem 'http-cookie'
 gem 'fastimage'
-# gem 'byebug'
+gem 'pry'
 
 gemspec

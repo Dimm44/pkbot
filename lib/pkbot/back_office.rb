@@ -12,7 +12,9 @@ module Pkbot::BackOffice
   extend Caching
   extend self
 
-  ISSUES_URL = "http://bo.profkiosk.ru/dept/8/press/187/year/#{Date.today.year}/issue/"
+  # ISSUES_URL = "http://bo.profkiosk.ru/dept/8/press/187/year/#{Date.today.year}/issue/"
+  ISSUES_URL = "http://bo.profkiosk.ru/!/content/press/187?tab=periods/index"
+  # http://bo.profkiosk.ru/!/content/press/187?tab=periods/index
   HOST       = "bo.profkiosk.ru"
 
   LOGIN_URL = 'https://id2.action-media.ru/Account/ShortLogin'
