@@ -1,6 +1,6 @@
 Snippet.add(:main) do
   setters(
-    shurik_default_mode: 'dev',
+    dev_default_mode: 'dev',
     mode: 'dev',
 
     debug_mode: {
@@ -13,15 +13,21 @@ Snippet.add(:main) do
       default_year: 2045
     },
 
-    real_issue: 9
+    real_issue: 72
   )
 
   def set_mode
-    mode(shurik_default_mode) if Pkbot::Location.development?
+    mode(dev_default_mode) if Pkbot::Location.development?
 
     puts "Setting #{mode} mode..."
     return unless mode_config
     process_mode_config
+  end
+
+  def try_process
+    issue.download
+    issue.config.generate_from_xml
+    issue.process
   end
 
   def process_mode_config

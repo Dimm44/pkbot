@@ -8,7 +8,7 @@ num = ARGV.size > 1 ? ARGV.pop : nil
 
 issue = num && Pkbot::Issue.for(num)
 
-raise "1"  unless issue.bo_issue.id == "30315"
+# raise "1"  unless (issue && issue.bo_issue.id == "30315")
 
 case ARGV[0]
 when 'v'

@@ -16,7 +16,8 @@ module Pkbot
     end
 
     def page
-      @node.xpath('page').first.text.to_i
+      el = @node.xpath('page').first
+      el && el.text.to_i
     end
 
     def xml_file_
